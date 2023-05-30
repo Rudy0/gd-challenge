@@ -18,7 +18,7 @@ function createGame(req, res) {
   const newGameWord = retrieveWord();
   const newGameId = uuid();
   const newGame = {
-    remainingGuesses: 3,
+    remainingGuesses: 6,
     unmaskedWord: newGameWord,
     word: newGameWord.replaceAll(/[a-zA-Z0-9]/g, "_"),
     status: "In Progress",
@@ -57,9 +57,66 @@ function createGuess(req, res) {
         })
     }
 
-    // todo: add logic for making a guess, modifying the game and updating the status
+    // Check if game is in progress 
+    if (game.status != "In Progress") {
+        return res.status(400).json({
+            Message: "Guess cannot be made! Game has ended!",
+            Game: game.word
+        })
 
-    return res.status(200).json(clearUnmaskedWord(game));
+        // check the remaining guesses for game
+    } else if(game.remainingGuesses == 0){
+        game.status = "Completed";
+
+        return res.status(400).json({
+            Message: "Game Over! You lost!",
+            Game: game.unmaskedWord
+        })
+
+        //check if the guess letter was already used
+    } else if(game.incorrectGuesses.includes(letter.toLowerCase())){
+        return res.status(400).json({
+            Message: "Error: Letter already used!"
+        })
+
+        //check if the guess letter is in the word
+    } else if(game.unmaskedWord.toLowerCase().includes(letter.toLowerCase())){
+
+        // update the masked word so that shows the correct guess letter 
+        const updatedWord = game.word.split("").map((char, index) => {
+            if (game.unmaskedWord[index].toLowerCase() === letter.toLowerCase()) {
+                return game.unmaskedWord[index];
+            } else {
+                return char;
+            }
+        }).join("");
+    
+        game.word = updatedWord;
+    
+        //check if all the letters have been guessed and end the game if so
+        if (!updatedWord.includes("_")) {
+            game.status = "Completed";
+            return res.status(200).json({
+                Message: 'Congratulations! You won!',
+                Game: game
+            });
+        } else{
+            return res.status(200).json({
+                Message: "Correct! Keep going!",
+                Word: game.word
+            });
+        }
+        
+    } else{
+        
+        //incorrect guess letter is added to the incorrectGuesses and lose 1 from the guess number
+        game.remainingGuesses -= 1;
+        game.incorrectGuesses.push(letter);
+        return res.status(200).json({
+            Message: "Try again!",
+            Word: game.word
+        })
+    }
 }
 
 module.exports = {
