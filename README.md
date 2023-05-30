@@ -1,6 +1,63 @@
 # Javascript Hangman API 
 
-In this partial implementation the technologies used are:
+The Hangman Game API is a HTTP-based RESTful API that allows players to create and play the classic game of Hangman. Players can create a new game, make letter guesses, retrieve the current state of the game and delete an existing game.
+
+<hr>
+
+The server will start running on `http://localhost:4567`. For information about how to install Node and all dependencies scroll down to **How To** section.
+
+## API Endpoints
+
+### Create a New Game
+
+Starts a new game of Hangman.
+
+- **URL:** `/games/`
+- **Method:** `POST`
+- **Response Code:** 200 (OK)
+- **Response Body:** Game ID
+
+### Get Game State
+
+Retrieves the current state of a game.
+
+- **URL:** `/games/{gameId}`
+- **Method:** `GET`
+- **Response Code:** 200 (OK)
+- **Response Body:** Game state (remaining attempts, word with masked letters, game status, list of incorrect guesses)
+
+### Make a Guess
+
+Allows the player to make a letter guess for a game.
+
+- **URL:** `/games/{gameId}/guesses`
+- **Method:** `POST`
+- **Request Body:** `{ "letter": "Player guess one letter" }` (JSON format)
+- **Response Code:** 200 (OK)
+- **Response Body:** Updated game state
+
+### Delete a Game
+
+Deletes a game.
+
+- **URL:** `/games/{gameId}`
+- **Method:** `DELETE`
+- **Response Code:** 204 (No Content)
+
+## Game State
+
+The game state object returned in the API response includes the following properties:
+
+- `remainingGuesses`: Number of remaining attempts
+- `word`: The word with masked letters using
+- `status`: Game status ("In Progress", "Completed", or "Lost")
+- `incorrectGuesses`: Array of incorrect guesses made so far
+
+## Error Handling
+
+The API returns appropriate status codes and error messages for invalid requests or game conditions.
+
+The technologies used are:
 
 - Node version 18
 - Node Package Manager (included with node)
@@ -8,6 +65,8 @@ In this partial implementation the technologies used are:
   - Express is a micro web framework that is used to expose API endpoints.
 - [Jest](https://jestjs.io/) 
   - Jest is a Javascript testing framework focused on simplicity.
+
+---
 
 ## How to: Run Application
 
