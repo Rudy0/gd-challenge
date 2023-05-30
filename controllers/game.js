@@ -42,6 +42,23 @@ function getGame(req, res) {
     res.status(200).json(clearUnmaskedWord(game));
 }
 
+//DELETE existing game
+function deleteGame(req, res){
+    const { gameId } = req.params;
+    if (!gameId) return res.sendStatus(404);
+
+    var game = games[gameId];
+    if (!game) {
+        return res.sendStatus(404); 
+    }
+
+    delete games[gameId];
+
+    res.status(204).json({
+        Message: "Game deleted successfuly!"
+    });
+}
+
 function createGuess(req, res) { 
     const { gameId } = req.params;
     const { letter } = req.body;
@@ -119,8 +136,10 @@ function createGuess(req, res) {
     }
 }
 
+
 module.exports = {
     createGame,
     getGame,
     createGuess,
+    deleteGame,
   };
