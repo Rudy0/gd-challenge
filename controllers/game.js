@@ -78,16 +78,16 @@ function createGuess(req, res) {
     if (game.status != "In Progress") {
         return res.status(400).json({
             Message: "Guess cannot be made! Game has ended!",
-            Game: game.word
+            Game: clearUnmaskedWord(game)
         })
 
         // check the remaining guesses for game
     } else if(game.remainingGuesses == 0){
-        game.status = "Completed";
+        game.status = "Lost";
 
-        return res.status(400).json({
+        return res.status(200).json({
             Message: "Game Over! You lost!",
-            Game: game.unmaskedWord
+            Game: clearUnmaskedWord(game)
         })
 
         //check if the guess letter was already used
@@ -115,12 +115,12 @@ function createGuess(req, res) {
             game.status = "Completed";
             return res.status(200).json({
                 Message: 'Congratulations! You won!',
-                Game: game
+                Game: clearUnmaskedWord(game)
             });
         } else{
             return res.status(200).json({
                 Message: "Correct! Keep going!",
-                Word: game.word
+                Game: clearUnmaskedWord(game)
             });
         }
         
@@ -131,7 +131,7 @@ function createGuess(req, res) {
         game.incorrectGuesses.push(letter);
         return res.status(200).json({
             Message: "Try again!",
-            Word: game.word
+            Game: clearUnmaskedWord(game)
         })
     }
 }
